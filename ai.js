@@ -1,3 +1,24 @@
+const save = () => {
+  var r = ar('canvas').getBBox(),
+    e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(' '),
+    t = ar('canvas');
+  t.setAttribute('viewBox', e);
+  var a = new XMLSerializer().serializeToString(t);
+  t.removeAttribute('viewBox');
+  var l = document.createElement('a');
+  l.setAttribute('href', 'data:image/svg+xml;base64,' + window.btoa(a)),
+    l.setAttribute(
+      'download',
+      Z.toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .trim() + '.svg',
+    ),
+    l.click();
+};
+
 var r,
   e,
   t,
@@ -257,7 +278,7 @@ var r,
         return t;
       })(e, [1, 2, 1, 2]);
     p = v(p);
-    var g = parseFloat(nr.value),
+    var g = 2.5, // LEGIBILITY
       c = h(n(c), N(g)),
       f = ((f = l(d(f))), s(f, 1 + g));
     for (let r = 0; r < K(f); r++) f[r] < Q(0.02) && (f[r] = f[r] - 100);
@@ -304,12 +325,10 @@ var r,
       var a = K($.g) / 64,
         l = W(a * R());
     else l = parseInt(or.value);
-    (ar('save-button').style.display = 'block'),
-      (Z = o),
-      (c = Z.trim().replace(/\s+/g, ' '));
+    (Z = o), (c = Z.trim().replace(/\s+/g, ' '));
     var n = K(c),
       v = Math.min(105 / n, 11);
-    v *= lr.width.baseVal.value / 1240;
+    v *= lr.width.baseVal.value / 1540; // SCALE
     var i = 8.2 * n * v,
       f = Math.max((lr.width.baseVal.value - i) / 2, 10),
       s = lr.height.baseVal.value / 2 + 20;
@@ -353,7 +372,7 @@ var r,
           if ((d += 1) > 40 * n || o > 0.5) {
             void S(w);
             console.log('finished');
-            ar('save-button').click();
+            // save();
             return;
           }
           e.push(l),
@@ -457,7 +476,7 @@ var r,
   },
   S = (a) => {
     if (0 != K(a)) {
-      var l = parseFloat(ir.value),
+      var l = 0.75, // WIDTH
         o = z(a);
       for (let n = r; n < K(o); n++) {
         a = o[n];
@@ -614,18 +633,8 @@ var r,
   tr = [],
   ar = document.getElementById.bind(document),
   lr = ar('canvas'),
-  or = ar('select-style'),
-  nr = ar('bias-slider'),
-  ir = ar('width-slider');
-ir.oninput = () =>
-  ((r) => {
-    for (; lr.lastChild; ) lr.removeChild(lr.lastChild);
-    if (0 != K(r)) {
-      var e = parseFloat(ir.value),
-        a = z(r);
-      for (let l = 0; l < K(a); l++) (r = a[l]), K(r) < 2 || q(r, t, e);
-    }
-  })(tr);
+  or = ar('select-style');
+
 var ur,
   fr,
   sr = (r) => r.toFixed(2),
@@ -681,28 +690,6 @@ var ur,
         return l(), t;
       })(r)),
         clearTimeout(fr);
-    }),
-  ar('save-button').addEventListener('click', () => {
-    var r = ar('canvas').getBBox(),
-      e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(
-        ' ',
-      ),
-      t = ar('canvas');
-    t.setAttribute('viewBox', e);
-    var a = new XMLSerializer().serializeToString(t);
-    t.removeAttribute('viewBox');
-    var l = document.createElement('a');
-    l.setAttribute('href', 'data:image/svg+xml;base64,' + window.btoa(a)),
-      l.setAttribute(
-        'download',
-        Z.toString()
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w\-]+/g, '')
-          .replace(/\-\-+/g, '-')
-          .trim() + '.svg',
-      ),
-      l.click();
-  });
+    });
 
 window.run = E;
