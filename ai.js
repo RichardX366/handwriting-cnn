@@ -628,7 +628,7 @@ var ur,
   fr,
   sr = (r) => r.toFixed(2),
   hr = (r) => r.toFixed(3);
-(ur = 'd.bin'),
+(ur = 'https://handwriting-cnn.vercel.app/d.bin'),
   (fr = (() => {
     var r = 0,
       e = [' ', '.', '..', '..', '...'],
@@ -706,3 +706,5 @@ var ur,
       ),
       l.click();
   });
+
+window.run = E;
