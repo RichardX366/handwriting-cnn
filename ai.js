@@ -628,7 +628,7 @@ var ur,
   fr,
   sr = (r) => r.toFixed(2),
   hr = (r) => r.toFixed(3);
-(ur = 'https://d33au9p5d8tjhf.cloudfront.net/d.bin'),
+(ur = 'd.bin'),
   (fr = (() => {
     var r = 0,
       e = [' ', '.', '..', '..', '...'],
