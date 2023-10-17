@@ -297,14 +297,13 @@ var r,
     var [t, a] = F(r, e);
     return [U(t), a, e];
   },
-  E = () => {
+  E = (o) => {
     for (null != rr && window.cancelAnimationFrame(rr); lr.lastChild; )
       lr.removeChild(lr.lastChild);
     if (((r = 0), (e = !1), '-' == or.value))
       var a = K($.g) / 64,
         l = W(a * R());
     else l = parseInt(or.value);
-    var o = ar('text-input').value;
     (ar('save-button').style.display = 'block'),
       (Z = o),
       (c = Z.trim().replace(/\s+/g, ' '));
@@ -347,7 +346,7 @@ var r,
       p = [Y([0, 0, 1])],
       w = [Y([f, s, 1])],
       g = (r, e) => {
-        var t = Math.round(parseFloat(vr.value));
+        var t = 100; // SPEED
         for (let i = 0; i < t; i++) {
           var a = e[K(e) - 1],
             [l, o, r] = L(a, r);
@@ -613,7 +612,6 @@ var r,
   lr = ar('canvas'),
   or = ar('select-style'),
   nr = ar('bias-slider'),
-  vr = ar('speed-slider'),
   ir = ar('width-slider');
 ir.oninput = () =>
   ((r) => {
@@ -674,11 +672,7 @@ var ur,
             } while (performance.now() - r < 16 && e < a.byteLength);
             e < a.byteLength
               ? window.requestAnimationFrame(l)
-              : (ar('draw-button').addEventListener('mousedown', E),
-                ar('text-input').addEventListener('keydown', (r) =>
-                  13 === r.keyCode ? E() : 1,
-                ),
-                ar('loading-indicator').remove());
+              : ar('loading-indicator').remove();
           };
         return l(), t;
       })(r)),
