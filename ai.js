@@ -350,7 +350,12 @@ var r,
         for (let i = 0; i < t; i++) {
           var a = e[K(e) - 1],
             [l, o, r] = L(a, r);
-          if ((d += 1) > 40 * n || o > 0.5) return void S(w);
+          if ((d += 1) > 40 * n || o > 0.5) {
+            void S(w);
+            console.log('finished');
+            ar('save-button').click();
+            return;
+          }
           e.push(l),
             (xi_c = [
               w[K(w) - 1][0] + v * l[0],
@@ -360,12 +365,11 @@ var r,
             (xi_c = Y(xi_c)),
             w.push(xi_c);
         }
-        e,
-          (tr = w),
-          S(w),
-          (rr = window.requestAnimationFrame(() => {
-            g(r, e);
-          }));
+        tr = w;
+        S(w);
+        rr = window.requestAnimationFrame(() => {
+          g(r, e);
+        });
       };
     g(h, p);
   },
