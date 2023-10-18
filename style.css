@@ -3,5 +3,7 @@
 @tailwind utilities;
 
 #canvas {
-  width: 100vw;
+  width: 1700px;
+  height: 86px;
+  background-color: white;
 }

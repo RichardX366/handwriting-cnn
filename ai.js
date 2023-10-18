@@ -1,22 +1,27 @@
-const save = () => {
-  var r = ar('canvas').getBBox(),
-    e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(' '),
-    t = ar('canvas');
-  t.setAttribute('viewBox', e);
-  var a = new XMLSerializer().serializeToString(t);
-  t.removeAttribute('viewBox');
-  var l = document.createElement('a');
-  l.setAttribute('href', 'data:image/svg+xml;base64,' + window.btoa(a)),
-    l.setAttribute(
-      'download',
-      Z.toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-')
-        .trim() + '.svg',
-    ),
-    l.click();
+const X_SCALE = 0.65;
+const SCALE = 4.4;
+const LEGIBILITY = 2.5;
+
+const finishWriting = () => {
+  console.log('finished');
+  // var r = ar('canvas').getBBox(),
+  //   e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(' '),
+  //   t = ar('canvas');
+  // t.setAttribute('viewBox', e);
+  // var a = new XMLSerializer().serializeToString(t);
+  // t.removeAttribute('viewBox');
+  // var l = document.createElement('a');
+  // l.setAttribute('href', 'data:image/svg+xml;base64,' + window.btoa(a)),
+  //   l.setAttribute(
+  //     'download',
+  //     Z.toString()
+  //       .toLowerCase()
+  //       .replace(/\s+/g, '-')
+  //       .replace(/[^\w\-]+/g, '')
+  //       .replace(/\-\-+/g, '-')
+  //       .trim() + '.svg',
+  //   ),
+  //   l.click();
 };
 
 var r,
@@ -278,9 +283,8 @@ var r,
         return t;
       })(e, [1, 2, 1, 2]);
     p = v(p);
-    var g = 2.5, // LEGIBILITY
-      c = h(n(c), N(g)),
-      f = ((f = l(d(f))), s(f, 1 + g));
+    var c = h(n(c), N(LEGIBILITY)),
+      f = ((f = l(d(f))), s(f, 1 + LEGIBILITY));
     for (let r = 0; r < K(f); r++) f[r] < Q(0.02) && (f[r] = f[r] - 100);
     var b = ((r) => {
         var e = -1e6,
@@ -319,20 +323,16 @@ var r,
     return [U(t), a, e];
   },
   E = (o) => {
-    for (null != rr && window.cancelAnimationFrame(rr); lr.lastChild; )
-      lr.removeChild(lr.lastChild);
+    while (lr.lastChild) lr.removeChild(lr.lastChild);
     if (((r = 0), (e = !1), '-' == or.value))
       var a = K($.g) / 64,
-        l = W(a * R());
-    else l = parseInt(or.value);
+        handwritingStyle = W(a * R());
+    else handwritingStyle = parseInt(or.value);
     (Z = o), (c = Z.trim().replace(/\s+/g, ' '));
-    var n = K(c),
-      v = Math.min(105 / n, 11);
-    v *= lr.width.baseVal.value / 1540; // SCALE
-    var i = 8.2 * n * v,
-      f = Math.max((lr.width.baseVal.value - i) / 2, 10),
-      s = lr.height.baseVal.value / 2 + 20;
-    (t = v),
+    var n = K(c);
+    var f = 10,
+      s = 55; // Y-LOCATION
+    (t = SCALE),
       (c = ((r) => {
         var e = r.split('').map((r) => (r in H ? H[r] : 1));
         return (e = [2, ...e, 3]), Y(e);
@@ -360,7 +360,7 @@ var r,
           u: a,
           z: o,
         };
-      })(K(c) + 1, l),
+      })(K(c) + 1, handwritingStyle),
       d = 0,
       p = [Y([0, 0, 1])],
       w = [Y([f, s, 1])],
@@ -371,14 +371,13 @@ var r,
             [l, o, r] = L(a, r);
           if ((d += 1) > 40 * n || o > 0.5) {
             void S(w);
-            console.log('finished');
-            // save();
+            finishWriting();
             return;
           }
           e.push(l),
             (xi_c = [
-              w[K(w) - 1][0] + v * l[0],
-              w[K(w) - 1][1] - v * l[1],
+              w[K(w) - 1][0] + SCALE * l[0],
+              w[K(w) - 1][1] - SCALE * l[1],
               l[2],
             ]),
             (xi_c = Y(xi_c)),
@@ -386,9 +385,7 @@ var r,
         }
         tr = w;
         S(w);
-        rr = window.requestAnimationFrame(() => {
-          g(r, e);
-        });
+        g(r, e);
       };
     g(h, p);
   },
@@ -413,7 +410,7 @@ var r,
       l.push([s, h]);
     }
     var d = a.concat(l.reverse()),
-      c = [['M ', sr(d[0][0]), ',', sr(d[0][1])].join('')],
+      c = [['M ', sr(d[0][0]) * X_SCALE, ',', sr(d[0][1])].join('')],
       p = K(d);
     for (let r = 0; r < p; r++) {
       var w = d[(r - 1 + p) % p],
@@ -424,19 +421,9 @@ var r,
         y = I(b, m),
         x = j(m, T(M, 0.2)),
         C = I(g, T(y, 0.2)),
-        A =
-          'C ' +
-          sr(x[0]) +
-          ' ' +
-          sr(x[1]) +
-          ', ' +
-          sr(C[0]) +
-          ' ' +
-          sr(C[1]) +
-          ', ' +
-          sr(g[0]) +
-          ' ' +
-          sr(g[1]);
+        A = `L ${sr(x[0]) * X_SCALE} ${sr(x[1])} L ${sr(g[0]) * X_SCALE} ${sr(
+          g[1],
+        )} L ${sr(C[0]) * X_SCALE} ${sr(C[1])}`;
       c.push(A);
     }
     var k = c.join(' '),
@@ -474,9 +461,9 @@ var r,
     }
     return e;
   },
-  S = (a) => {
+  S = (a, writingStyle) => {
     if (0 != K(a)) {
-      var l = 0.75, // WIDTH
+      var l = 0.75,
         o = z(a);
       for (let n = r; n < K(o); n++) {
         a = o[n];
@@ -628,7 +615,6 @@ var r,
   },
   Z = null,
   $ = $,
-  rr = null,
   er = null,
   tr = [],
   ar = document.getElementById.bind(document),
