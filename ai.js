@@ -463,14 +463,13 @@ var r,
   },
   S = (a, writingStyle) => {
     if (0 != K(a)) {
-      var l = 0.75,
-        o = z(a);
+      var o = z(a);
       for (let n = r; n < K(o); n++) {
         a = o[n];
         K(a) < 2
           ? (0 != K(a) && 1 != a[0][2]) || (r += 1)
           : (e && lr.removeChild(lr.lastChild),
-            q(a, t, l),
+            q(a, t, 0),
             1 == a[K(a) - 1][2] ? ((e = !1), (r += 1)) : (e = !0));
       }
     }
