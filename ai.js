@@ -655,7 +655,7 @@ var ur,
       (t.innerHTML = 'Loading ' + e[r % K(e)]), (r += 1);
     }, 200);
   })()),
-  fetch(ur)
+  fetch(ur, { cache: 'force-cache' })
     .then((r) => r.arrayBuffer())
     .then((r) => {
       ($ = ((r) => {
