@@ -2,8 +2,12 @@ const X_SCALE = 0.65;
 const SCALE = 4.4;
 const LEGIBILITY = 2.5;
 
+let result = [];
+
 const finishWriting = () => {
-  console.log('finished');
+  result.forEach((letter) =>
+    console.log(letter.map((point) => `(${point[0]},${[point[1]]})`).join(',')),
+  );
   // var r = ar('canvas').getBBox(),
   //   e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(' '),
   //   t = ar('canvas');
@@ -61,7 +65,7 @@ var r,
       for (let a = 0; a < K(e); a++) r[t * G + a] = r[t * G + a] + e[a];
     return r;
   },
-  w = (r, e, t) => {
+  w = (r, e) => {
     var a = K(r) + K(e),
       l = Y(a);
     for (let e = 0; e < K(r); e++) l[e] = r[e];
@@ -322,13 +326,13 @@ var r,
     var [t, a] = F(r, e);
     return [U(t), a, e];
   },
-  E = (o) => {
+  E = (text, style) => {
     while (lr.lastChild) lr.removeChild(lr.lastChild);
-    if (((r = 0), (e = !1), '-' == or.value))
+    if (((r = 0), (e = !1), '-' == style))
       var a = K($.g) / 64,
         handwritingStyle = W(a * R());
-    else handwritingStyle = parseInt(or.value);
-    (Z = o), (c = Z.trim().replace(/\s+/g, ' '));
+    else handwritingStyle = parseInt(style);
+    (Z = text), (c = Z.trim().replace(/\s+/g, ' '));
     var n = K(c);
     var f = 10,
       s = 55; // Y-LOCATION
@@ -371,7 +375,17 @@ var r,
             [l, o, r] = L(a, r);
           if ((d += 1) > 40 * n || o > 0.5) {
             void S(w);
+            const newResult = [];
+            for (const i in result) {
+              const matchIndex = newResult.findIndex(
+                (l) => l[0][0] === result[i][0][0],
+              );
+              if (matchIndex === -1) newResult.push(result[i]);
+              else newResult[matchIndex] = result[i];
+            }
+            result = newResult;
             finishWriting();
+            result = [];
             return;
           }
           e.push(l),
@@ -412,6 +426,7 @@ var r,
     var d = a.concat(l.reverse()),
       c = [['M ', sr(d[0][0]) * X_SCALE, ',', sr(d[0][1])].join('')],
       p = K(d);
+    const letter = [[sr(d[0][0]) * X_SCALE, sr(d[0][1])]];
     for (let r = 0; r < p; r++) {
       var w = d[(r - 1 + p) % p],
         m = d[r],
@@ -425,7 +440,15 @@ var r,
           g[1],
         )} L ${sr(C[0]) * X_SCALE} ${sr(C[1])}`;
       c.push(A);
+      if (r < p / 2) {
+        letter.push(
+          [sr(x[0]) * X_SCALE, sr(x[1])],
+          [sr(g[0]) * X_SCALE, sr(g[1])],
+          [sr(C[0]) * X_SCALE, sr(C[1])],
+        );
+      }
     }
+    result.push(letter);
     var k = c.join(' '),
       F = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     F.setAttribute('d', k),
@@ -617,8 +640,7 @@ var r,
   er = null,
   tr = [],
   ar = document.getElementById.bind(document),
-  lr = ar('canvas'),
-  or = ar('select-style');
+  lr;
 
 var ur,
   fr,
@@ -677,4 +699,7 @@ var ur,
         clearTimeout(fr);
     });
 
-window.run = E;
+window.run = (text, style, canvas) => {
+  lr = canvas;
+  E(text, style);
+};
