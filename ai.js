@@ -647,18 +647,10 @@ var ur,
   sr = (r) => r.toFixed(2),
   hr = (r) => r.toFixed(3);
 (ur = 'https://handwriting-cnn.vercel.app/d.bin'),
-  (fr = (() => {
-    var r = 0,
-      e = [' ', '.', '..', '..', '...'],
-      t = ar('loading-indicator');
-    return setInterval(() => {
-      (t.innerHTML = 'Loading ' + e[r % K(e)]), (r += 1);
-    }, 200);
-  })()),
   fetch(ur, { cache: 'force-cache' })
     .then((r) => r.arrayBuffer())
     .then((r) => {
-      ($ = ((r) => {
+      $ = ((r) => {
         var e = 0,
           t = {},
           a = new DataView(r),
@@ -690,13 +682,10 @@ var ur,
                 : v && (u = _(u, f, h)),
                 (t[n] = u);
             } while (performance.now() - r < 16 && e < a.byteLength);
-            e < a.byteLength
-              ? window.requestAnimationFrame(l)
-              : ar('loading-indicator').remove();
+            e < a.byteLength && window.requestAnimationFrame(l);
           };
         return l(), t;
-      })(r)),
-        clearTimeout(fr);
+      })(r);
     });
 
 window.run = (text, style, canvas) => {
