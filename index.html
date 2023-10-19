@@ -6,28 +6,65 @@
     <link href="style.css" rel="stylesheet" />
     <link href="tailwind.css" rel="stylesheet" />
   </head>
-  <body>
-    <label for="select-style">Style:</label>
-    <select id="select-style">
-      <option value="-">&ndash;</option>
-      <option value="44">1</option>
-      <option value="54">2</option>
-      <option value="23" selected>3</option>
-      <option value="1">4</option>
-      <option value="19">5</option>
-      <option value="6">6</option>
-      <option value="30">7</option>
-      <option value="11">8</option>
-      <option value="21">9</option>
-    </select>
-    <svg id="canvas"></svg>
-    <button>Write</button>
-    <div
+  <body class="p-4">
+    <div class="flex gap-4 pb-4">
+      <div class="divide-y divide-blue-400" id="paper">
+        <div><svg id="line1"></svg><button>🔄</button></div>
+        <div><svg id="line2"></svg><button>🔄</button></div>
+        <div><svg id="line3"></svg><button>🔄</button></div>
+        <div><svg id="line4"></svg><button>🔄</button></div>
+        <div><svg id="line5"></svg><button>🔄</button></div>
+        <div><svg id="line6"></svg><button>🔄</button></div>
+        <div><svg id="line7"></svg><button>🔄</button></div>
+        <div><svg id="line8"></svg><button>🔄</button></div>
+        <div><svg id="line9"></svg><button>🔄</button></div>
+        <div><svg id="line10"></svg><button>🔄</button></div>
+        <div><svg id="line11"></svg><button>🔄</button></div>
+        <div><svg id="line12"></svg><button>🔄</button></div>
+        <div><svg id="line13"></svg><button>🔄</button></div>
+        <div><svg id="line14"></svg><button>🔄</button></div>
+        <div><svg id="line15"></svg><button>🔄</button></div>
+        <div><svg id="line16"></svg><button>🔄</button></div>
+        <div><svg id="line17"></svg><button>🔄</button></div>
+        <div><svg id="line18"></svg><button>🔄</button></div>
+        <div><svg id="line19"></svg><button>🔄</button></div>
+        <div><svg id="line20"></svg><button>🔄</button></div>
+        <div><svg id="line21"></svg><button>🔄</button></div>
+        <div><svg id="line22"></svg><button>🔄</button></div>
+        <div><svg id="line23"></svg><button>🔄</button></div>
+        <div><svg id="line24"></svg><button>🔄</button></div>
+        <div><svg id="line25"></svg><button>🔄</button></div>
+        <div><svg id="line26"></svg><button>🔄</button></div>
+        <div><svg id="line27"></svg><button>🔄</button></div>
+        <div><svg id="line28"></svg><button>🔄</button></div>
+      </div>
+      <textarea
+        class="textarea textarea-info text-white text-3xl p-1"
+      ></textarea>
+    </div>
+    <div class="flex gap-4">
+      <button id="write" class="btn btn-info">Write</button>
+      <button id="home" class="btn btn-success">Home</button>
+      <label for="select-style" class="label">Style:</label>
+      <select id="select-style" class="select select-bordered">
+        <option value="-">&ndash;</option>
+        <option value="44">1</option>
+        <option value="54">2</option>
+        <option value="23" selected>3</option>
+        <option value="1">4</option>
+        <option value="19">5</option>
+        <option value="6">6</option>
+        <option value="30">7</option>
+        <option value="11">8</option>
+        <option value="21">9</option>
+      </select>
+    </div>
+    <!-- <div
       class="absolute inset-0 flex justify-center items-center bg-gray-800"
       id="overlay"
     >
       <button class="btn btn-lg btn-info" id="serial">Select Machine</button>
-    </div>
+    </div> -->
     <script src="ai.js"></script>
     <script src="script.js"></script>
   </body>

@@ -1,32 +1,8 @@
 const X_SCALE = 0.65;
-const SCALE = 4.4;
+const SCALE = 2.2;
 const LEGIBILITY = 2.5;
 
 let result = [];
-
-const finishWriting = () => {
-  result.forEach((letter) =>
-    console.log(letter.map((point) => `(${point[0]},${[point[1]]})`).join(',')),
-  );
-  // var r = ar('canvas').getBBox(),
-  //   e = [hr(r.x - 3), hr(r.y - 3), hr(r.width + 6), hr(r.height + 6)].join(' '),
-  //   t = ar('canvas');
-  // t.setAttribute('viewBox', e);
-  // var a = new XMLSerializer().serializeToString(t);
-  // t.removeAttribute('viewBox');
-  // var l = document.createElement('a');
-  // l.setAttribute('href', 'data:image/svg+xml;base64,' + window.btoa(a)),
-  //   l.setAttribute(
-  //     'download',
-  //     Z.toString()
-  //       .toLowerCase()
-  //       .replace(/\s+/g, '-')
-  //       .replace(/[^\w\-]+/g, '')
-  //       .replace(/\-\-+/g, '-')
-  //       .trim() + '.svg',
-  //   ),
-  //   l.click();
-};
 
 var r,
   e,
@@ -334,8 +310,8 @@ var r,
     else handwritingStyle = parseInt(style);
     (Z = text), (c = Z.trim().replace(/\s+/g, ' '));
     var n = K(c);
-    var f = 10,
-      s = 55; // Y-LOCATION
+    var f = 10 + (text.length - text.trimStart().length) * 25,
+      s = 30; // Y-LOCATION
     (t = SCALE),
       (c = ((r) => {
         var e = r.split('').map((r) => (r in H ? H[r] : 1));
@@ -383,10 +359,8 @@ var r,
               if (matchIndex === -1) newResult.push(result[i]);
               else newResult[matchIndex] = result[i];
             }
-            result = newResult;
-            finishWriting();
             result = [];
-            return;
+            return newResult;
           }
           e.push(l),
             (xi_c = [
@@ -399,9 +373,9 @@ var r,
         }
         tr = w;
         S(w);
-        g(r, e);
+        return g(r, e);
       };
-    g(h, p);
+    return g(h, p);
   },
   q = (r, e, t) => {
     var a = [],
@@ -426,7 +400,7 @@ var r,
     var d = a.concat(l.reverse()),
       c = [['M ', sr(d[0][0]) * X_SCALE, ',', sr(d[0][1])].join('')],
       p = K(d);
-    const letter = [[sr(d[0][0]) * X_SCALE, sr(d[0][1])]];
+    const letter = [[(sr(d[0][0]) * X_SCALE) / 5, sr(d[0][1]) / 5]];
     for (let r = 0; r < p; r++) {
       var w = d[(r - 1 + p) % p],
         m = d[r],
@@ -442,9 +416,9 @@ var r,
       c.push(A);
       if (r < p / 2) {
         letter.push(
-          [sr(x[0]) * X_SCALE, sr(x[1])],
-          [sr(g[0]) * X_SCALE, sr(g[1])],
-          [sr(C[0]) * X_SCALE, sr(C[1])],
+          [(sr(x[0]) * X_SCALE) / 5, sr(x[1]) / 5],
+          [(sr(g[0]) * X_SCALE) / 5, sr(g[1]) / 5],
+          [(sr(C[0]) * X_SCALE) / 5, sr(C[1]) / 5],
         );
       }
     }
@@ -688,7 +662,7 @@ var ur,
       })(r);
     });
 
-window.run = (text, style, canvas) => {
-  lr = canvas;
-  E(text, style);
+window.run = (text, style, svg) => {
+  lr = svg;
+  return E(text, style);
 };

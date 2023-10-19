@@ -2,8 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-#canvas {
-  width: 1700px;
-  height: 86px;
+svg {
+  width: 850px;
+  height: 43.5px;
   background-color: white;
+}
+
+textarea {
+  width: 820px;
+  height: 1220px;
+  line-height: 2.7rem !important;
+}
+
+#paper div {
+  height: 43.5px;
+  @apply relative;
+}
+
+#paper button {
+  @apply absolute inset-y-2 right-2;
 }
