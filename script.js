@@ -35,6 +35,15 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const svgs = new Array(28)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
+const getSide = () => document.querySelector('#side').value;
+const xToSteps = (mm) => {
+  if (getSide() === 'top') return 76000 - mmToSteps(mm);
+  return 12300 + mmToSteps(mm);
+};
+const yToSteps = (mm) => {
+  if (getSide() === 'top') return 77000 - mmToSteps(mm);
+  return 21000 + mmToSteps(mm);
+};
 
 const pickSerial = async () => {
   try {
@@ -58,7 +67,7 @@ const write = async () => {
     if (line) {
       const coords = window.run(
         line,
-        document.querySelector('#select-style').value,
+        document.querySelector('#style').value,
         svgs[i],
       );
       // coords.forEach((letter) =>
@@ -80,10 +89,25 @@ document.querySelectorAll('#paper button').forEach(
       if (!getLines()[i]) return;
       window.run(
         getLines()[i],
-        document.querySelector('#select-style').value,
+        document.querySelector('#style').value,
         svgs[i],
       );
     }),
 );
 
 document.querySelector('#home').onclick = () => send('home');
+
+document.querySelector('#side').onchange = (e) => {
+  console.log(e.target.value);
+  if (e.target.value === 'top') {
+    svgs
+      .slice(0, 14)
+      .forEach((svg) => (svg.style.backgroundColor = 'lightcyan'));
+    svgs.slice(14).forEach((svg) => (svg.style.backgroundColor = 'white'));
+  } else {
+    svgs.slice(0, 14).forEach((svg) => (svg.style.backgroundColor = 'white'));
+    svgs.slice(14).forEach((svg) => (svg.style.backgroundColor = 'lightcyan'));
+  }
+};
+
+svgs.slice(0, 14).forEach((svg) => (svg.style.backgroundColor = 'lightcyan'));
