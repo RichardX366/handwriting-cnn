@@ -2,8 +2,9 @@ const encoder = new TextEncoder();
 const textDecoder = new TextDecoderStream();
 const reader = textDecoder.readable.getReader();
 let writer;
+let coords = []; // [x,y][letter][line]
 
-// Off Paper - 79000
+// Off Paper - 78000
 // On Paper  - 80000
 
 const mmToSteps = (mm) => Math.round((mm * 4096) / 9);
@@ -37,12 +38,12 @@ const svgs = new Array(28)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => {
-  if (getSide() === 'top') return 76000 - mmToSteps(mm);
-  return 12300 + mmToSteps(mm);
+  if (getSide() === 'top') return 77500 - mmToSteps(mm);
+  return 14000 + mmToSteps(mm);
 };
-const yToSteps = (mm) => {
-  if (getSide() === 'top') return 77000 - mmToSteps(mm);
-  return 21000 + mmToSteps(mm);
+const yToSteps = (mm, line) => {
+  if (getSide() === 'top') return 16000 + mmToSteps(mm + line * 8.7);
+  return 71200 - mmToSteps(mm + line * 8.7);
 };
 
 const pickSerial = async () => {
@@ -58,26 +59,49 @@ const pickSerial = async () => {
   }
 };
 
-// document.querySelector('#serial').onclick = pickSerial;
+document.querySelector('#serial').onclick = pickSerial;
 
-const write = async () => {
+const loadText = async () => {
+  coords = [];
+  svgs.forEach((svg) => (svg.innerHTML = ''));
   const lines = getLines();
   for (const i in lines) {
     const line = lines[i];
-    if (line) {
-      const coords = window.run(
-        line,
-        document.querySelector('#style').value,
-        svgs[i],
-      );
-      // coords.forEach((letter) =>
-      //   console.log(
-      //     letter.map((point) => `(${point[0]},${[point[1]]})`).join(','),
-      //   ),
-      // );
-      await wait(1);
+    coords.push(
+      window.run(line, document.querySelector('#style').value, svgs[i]),
+    );
+    await wait(1);
+  }
+};
+
+document.querySelector('#loadText').onclick = loadText;
+
+const write = async () => {
+  const commands = coords
+    .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 28)
+    .flatMap((line, i) =>
+      line.flatMap((letter) => [
+        `${xToSteps(letter[0][0])} ${yToSteps(letter[0][1], i)} 78000`,
+        ...letter.map(
+          (line) => `${xToSteps(line[0])} ${yToSteps(line[1], i)} 80000`,
+        ),
+        `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
+          letter[letter.length - 1][1],
+          i,
+        )} 78000`,
+      ]),
+    );
+  commands.push(commands[commands.length - 1].replace('78000', '70000'));
+  send(commands[0]);
+  commands.shift();
+  while (commands.length) {
+    const queueSize = +(await read());
+    for (let i = 0; i < queueSize && commands.length; i++) {
+      send(commands[0]);
+      commands.shift();
     }
   }
+  console.log('Done');
 };
 
 document.querySelector('#write').onclick = write;
@@ -87,7 +111,7 @@ document.querySelectorAll('#paper button').forEach(
     (button.onclick = (e) => {
       const i = e.target.parentElement.children[0].id.substring(4) - 1;
       if (!getLines()[i]) return;
-      window.run(
+      coords[i] = window.run(
         getLines()[i],
         document.querySelector('#style').value,
         svgs[i],
@@ -98,7 +122,6 @@ document.querySelectorAll('#paper button').forEach(
 document.querySelector('#home').onclick = () => send('home');
 
 document.querySelector('#side').onchange = (e) => {
-  console.log(e.target.value);
   if (e.target.value === 'top') {
     svgs
       .slice(0, 14)

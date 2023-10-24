@@ -43,8 +43,9 @@
       ></textarea>
     </div>
     <div class="flex gap-4">
-      <button id="write" class="btn btn-info">Write</button>
+      <button id="loadText" class="btn btn-info">Load Text</button>
       <button id="home" class="btn btn-success">Home</button>
+      <button id="write" class="btn btn-error">Write</button>
       <label for="style" class="label">Style:</label>
       <select id="style" class="select select-bordered">
         <option value="-">&ndash;</option>
@@ -64,12 +65,12 @@
         <option value="bottom">Bottom</option>
       </select>
     </div>
-    <!-- <div
-      class="absolute inset-0 flex justify-center items-center bg-gray-800"
+    <div
+      class="fixed inset-0 flex justify-center items-center bg-gray-800"
       id="overlay"
     >
       <button class="btn btn-lg btn-info" id="serial">Select Machine</button>
-    </div> -->
+    </div>
     <script src="ai.js"></script>
     <script src="script.js"></script>
   </body>
