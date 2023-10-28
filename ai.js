@@ -1,5 +1,5 @@
 const X_SCALE = 0.65;
-const SCALE = 2.2;
+const SCALE = 2;
 const LEGIBILITY = 2.5;
 
 let result = [];
