@@ -37,14 +37,8 @@ const svgs = new Array(28)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
-const xToSteps = (mm) => {
-  if (getSide() === 'top') return 77500 - mmToSteps(mm);
-  return 14000 + mmToSteps(mm);
-};
-const yToSteps = (mm, line) => {
-  if (getSide() === 'top') return 16000 + mmToSteps(mm + line * 8.7);
-  return 71200 - mmToSteps(mm + line * 8.7);
-};
+const xToSteps = (mm) => 14000 + mmToSteps(mm);
+const yToSteps = (mm, line) => 71200 - mmToSteps(mm + line * 8.7);
 
 const pickSerial = async () => {
   try {
