@@ -77,7 +77,7 @@ const write = async () => {
       line.flatMap((letter) => [
         `${xToSteps(letter[0][0])} ${yToSteps(letter[0][1], i)} 78000`,
         ...letter.map(
-          (line) => `${xToSteps(line[0])} ${yToSteps(line[1], i)} 80000`,
+          (line) => `${xToSteps(line[0])} ${yToSteps(line[1], i)} 79500`,
         ),
         `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
           letter[letter.length - 1][1],
