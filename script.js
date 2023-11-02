@@ -71,19 +71,24 @@ const loadText = async () => {
 document.querySelector('#loadText').onclick = loadText;
 
 const write = async () => {
+  let xDistance = 0;
+  let yDistance = 0;
   const commands = coords
     .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 28)
     .flatMap((line, i) =>
-      line.flatMap((letter) => [
-        `${xToSteps(letter[0][0])} ${yToSteps(letter[0][1], i)} 78000`,
-        ...letter.map(
-          (line) => `${xToSteps(line[0])} ${yToSteps(line[1], i)} 79500`,
-        ),
-        `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
-          letter[letter.length - 1][1],
-          i,
-        )} 78000`,
-      ]),
+      line.flatMap((letter) => {
+        const letterCommands = [
+          `${xToSteps(letter[0][0])} ${yToSteps(letter[0][1], i)} 78000`,
+          ...letter.map(
+            (line) => `${xToSteps(line[0])} ${yToSteps(line[1], i)} 80000`,
+          ),
+          `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
+            letter[letter.length - 1][1],
+            i,
+          )} 78000`,
+        ];
+        return letterCommands;
+      }),
     );
   commands.push(commands[commands.length - 1].replace('78000', '70000'));
   send(commands[0]);
