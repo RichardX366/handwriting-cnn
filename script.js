@@ -77,6 +77,8 @@ const write = async () => {
     .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 28)
     .flatMap((line, i) =>
       line.flatMap((letter) => {
+        const xOffset = letter[letter.length - 1][0] - letter[0][0];
+        const yOffset = letter[letter.length - 1][1] - letter[0][1];
         const letterCommands = [
           `${xToSteps(letter[0][0])} ${yToSteps(letter[0][1], i)} 78000`,
           ...letter.map(
