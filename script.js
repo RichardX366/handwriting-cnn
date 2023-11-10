@@ -39,6 +39,15 @@ const svgs = new Array(28)
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => 13500 + mmToSteps(mm);
 const yToSteps = (mm, line) => 72500 - mmToSteps(mm + line * 8.7);
+const getZ = (x, y) => {
+  let yDistance = 72000 - y;
+  if (y < 44500) yDistance = y - 17000;
+  yDistance /= 27500;
+  let xDistance = 91000 - x;
+  if (x < 46000) xDistance = x;
+  xDistance /= 46000;
+  return 82000 + 1700 * Math.min(xDistance, yDistance);
+};
 
 const pickSerial = async () => {
   try {
@@ -82,7 +91,10 @@ const write = async () => {
           )} 80000`,
           ...letter.map(
             (stroke) =>
-              `${xToSteps(stroke[0])} ${yToSteps(stroke[1], lineIndex)} 83500`,
+              `${xToSteps(stroke[0])} ${yToSteps(stroke[1], lineIndex)} ${getZ(
+                xToSteps(stroke[0]),
+                yToSteps(stroke[1], lineIndex),
+              )}`,
           ),
         ];
         return [...letterCommands, ...[...letterCommands].reverse()];
