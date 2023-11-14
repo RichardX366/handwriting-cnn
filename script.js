@@ -37,7 +37,7 @@ const svgs = new Array(28)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
-const xToSteps = (mm) => 13500 + mmToSteps(mm);
+const xToSteps = (mm) => 15000 + mmToSteps(mm);
 const yToSteps = (mm, line) => 72500 - mmToSteps(mm + line * 8.7);
 const getZ = (x, y) => {
   let yDistance = 72000 - y;
@@ -46,7 +46,7 @@ const getZ = (x, y) => {
   let xDistance = 91000 - x;
   if (x < 46000) xDistance = x;
   xDistance /= 46000;
-  return 82000 + 1700 * Math.min(xDistance, yDistance);
+  return 81000 + 2500 * Math.min(xDistance, yDistance);
 };
 
 const pickSerial = async () => {
@@ -55,6 +55,11 @@ const pickSerial = async () => {
     await pico.open({ baudRate: 115200 });
     pico.readable.pipeTo(textDecoder.writable);
     writer = pico.writable.getWriter();
+    pico.ondisconnect = () => {
+      writer = null;
+      coords = [];
+      document.querySelector('#overlay').style.display = '';
+    };
 
     document.querySelector('#overlay').style.display = 'none';
   } catch (e) {
@@ -83,7 +88,7 @@ const write = async () => {
   const commands = coords
     .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 28)
     .flatMap((line, lineIndex) =>
-      line.flatMap((letter) => {
+      line.flatMap((letter, i) => {
         const letterCommands = [
           `${xToSteps(letter[0][0])} ${yToSteps(
             letter[0][1],
@@ -96,10 +101,16 @@ const write = async () => {
                 yToSteps(stroke[1], lineIndex),
               )}`,
           ),
+          `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
+            letter[letter.length - 1][1],
+            lineIndex,
+          )} 80000`,
         ];
-        return [...letterCommands, ...[...letterCommands].reverse()];
+        if (i % 2) letterCommands.reverse();
+        return letterCommands;
       }),
     );
+  commands.reverse();
   commands.push(commands[commands.length - 1].replace('80000', '70000'));
   send(commands[0]);
   commands.shift();
@@ -149,3 +160,15 @@ document.querySelector('#side').onchange = (e) => {
 };
 
 svgs.slice(0, 14).forEach((svg) => (svg.style.backgroundColor = 'lightcyan'));
+
+const sendCustomCommand = () => {
+  const command = document.querySelector('#custom').value;
+  if (!command) return;
+  document.querySelector('#custom').value = '';
+  send(command);
+};
+
+document.querySelector('#custom').onkeypress = (e) => {
+  if (e.key === 'Enter') sendCustomCommand();
+};
+document.querySelector('#customBtn').onclick = sendCustomCommand;
