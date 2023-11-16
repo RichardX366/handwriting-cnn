@@ -38,14 +38,14 @@ const svgs = new Array(28)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => 15000 + mmToSteps(mm);
-const yToSteps = (mm, line) => 72500 - mmToSteps(mm + line * 8.7);
+const yToSteps = (mm, line) => 56500 - mmToSteps(mm + line * 8.7);
 const getZ = (x, y) => {
-  let yDistance = 72000 - y;
-  if (y < 44500) yDistance = y - 17000;
-  yDistance /= 27500;
-  let xDistance = 91000 - x;
-  if (x < 46000) xDistance = x;
-  xDistance /= 46000;
+  let yDistance = y;
+  if (y > 30000) yDistance = 60000 - y;
+  yDistance /= 30000;
+  let xDistance = x;
+  if (x > 43000) xDistance = 86000 - x;
+  xDistance /= 43000;
   return 81000 + 2500 * Math.min(xDistance, yDistance);
 };
 
