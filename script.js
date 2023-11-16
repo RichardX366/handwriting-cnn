@@ -5,7 +5,7 @@ let writer;
 let coords = []; // [x,y][letter][line]
 
 // Off Paper - 80000
-// On Paper  - 82000 - 83500
+// On Paper  - 81800 - 84000
 
 const mmToSteps = (mm) => Math.round((mm * 4096) / 9);
 const send = async (str) => writer.write(encoder.encode(str + '\n'));
@@ -39,15 +39,8 @@ const svgs = new Array(28)
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => 15000 + mmToSteps(mm);
 const yToSteps = (mm, line) => 56500 - mmToSteps(mm + line * 8.7);
-const getZ = (x, y) => {
-  let yDistance = y;
-  if (y > 30000) yDistance = 60000 - y;
-  yDistance /= 30000;
-  let xDistance = x;
-  if (x > 43000) xDistance = 86000 - x;
-  xDistance /= 43000;
-  return 81000 + 2500 * Math.min(xDistance, yDistance);
-};
+const getZ = (x, y) =>
+  81800 + (2300 / 60000) * Math.abs((60000 / 86000) * x + y - 60000);
 
 const pickSerial = async () => {
   try {
@@ -127,7 +120,7 @@ const write = async () => {
 document.querySelector('#write').onclick = write;
 
 const alignPencil = async () => {
-  send('20000 20000 80000');
+  send('13000 8000 82000');
 };
 
 document.querySelector('#alignPencil').onclick = alignPencil;
