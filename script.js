@@ -37,7 +37,7 @@ const svgs = new Array(28)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
-const xToSteps = (mm) => 15000 + mmToSteps(mm);
+const xToSteps = (mm) => 12000 + mmToSteps(mm);
 const yToSteps = (mm, line) => 56500 - mmToSteps(mm + line * 8.7);
 const getZ = (x, y) =>
   81800 + (2300 / 60000) * Math.abs((60000 / 86000) * x + y - 60000);
