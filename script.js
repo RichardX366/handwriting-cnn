@@ -103,7 +103,6 @@ const write = async () => {
         return letterCommands;
       }),
     );
-  commands.reverse();
   commands.push(commands[commands.length - 1].replace('80000', '70000'));
   send(commands[0]);
   commands.shift();
