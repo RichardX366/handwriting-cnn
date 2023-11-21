@@ -36,7 +36,8 @@ const svgs = new Array(27)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => 12000 + mmToSteps(mm);
-const yToSteps = (mm, line) => 56500 - mmToSteps(mm + line * 8.7);
+const yToSteps = (mm, line, x) =>
+  56600 - mmToSteps(mm + line * 8.7) + Math.round((x * 500) / 80000);
 const getZ = (x, y) =>
   Math.round(
     12_800 +
@@ -89,20 +90,23 @@ const write = async () => {
             `${xToSteps(letter[0][0])} ${yToSteps(
               letter[0][1],
               lineIndex,
+              xToSteps(letter[0][0]),
             )} 10000`,
             ...letter.map(
               (stroke) =>
                 `${xToSteps(stroke[0])} ${yToSteps(
                   stroke[1],
                   lineIndex,
+                  xToSteps(stroke[0]),
                 )} ${getZ(
                   xToSteps(stroke[0]),
-                  yToSteps(stroke[1], lineIndex),
+                  yToSteps(stroke[1], lineIndex, xToSteps(stroke[0])),
                 )}`,
             ),
             `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
               letter[letter.length - 1][1],
               lineIndex,
+              xToSteps(letter[letter.length - 1][0]),
             )} 10000`,
           ];
           if (i % 2) letterCommands.reverse();
@@ -164,7 +168,7 @@ const sendCustomCommand = () => {
   const command = document.querySelector('#custom').value;
   if (!command) return;
   document.querySelector('#custom').value = '';
-  send(command + ' ' + getZ(command.split(' ')[0], command.split(' ')[1]));
+  send(command);
 };
 
 document.querySelector('#custom').onkeypress = (e) => {
