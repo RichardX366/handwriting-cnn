@@ -4,10 +4,8 @@ const reader = textDecoder.readable.getReader();
 let writer;
 let coords = []; // [x,y][letter][line]
 
-// Off Paper - 80000
-// On Paper  - 81800 - 84000
-
 const mmToSteps = (mm) => Math.round((mm * 4096) / 9);
+const reLU = (x) => (x > 0 ? x : 0);
 const send = async (str) => writer.write(encoder.encode(str + '\n'));
 const read = () => reader.read().then(({ value }) => value);
 const getLines = () => {
@@ -30,17 +28,21 @@ const getLines = () => {
       result.push(spacing + remaining);
       return result;
     })
-    .slice(0, 28);
+    .slice(0, 27);
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const svgs = new Array(28)
+const svgs = new Array(27)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
 const xToSteps = (mm) => 12000 + mmToSteps(mm);
 const yToSteps = (mm, line) => 56500 - mmToSteps(mm + line * 8.7);
 const getZ = (x, y) =>
-  81800 + (2300 / 60000) * Math.abs((60000 / 86000) * x + y - 60000);
+  Math.round(
+    12_800 +
+      (2_500 / 60_000) * reLU((-60_000 / 86_000) * x - y + 60_000) +
+      (500 * y) / 60_000,
+  );
 
 const pickSerial = async () => {
   try {
@@ -79,31 +81,36 @@ document.querySelector('#loadText').onclick = loadText;
 
 const write = async () => {
   const commands = coords
-    .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 28)
+    .slice(getSide() === 'top' ? 0 : 14, getSide() === 'top' ? 14 : 27)
     .flatMap((line, lineIndex) =>
-      line.flatMap((letter, i) => {
-        const letterCommands = [
-          `${xToSteps(letter[0][0])} ${yToSteps(
-            letter[0][1],
-            lineIndex,
-          )} 80000`,
-          ...letter.map(
-            (stroke) =>
-              `${xToSteps(stroke[0])} ${yToSteps(stroke[1], lineIndex)} ${getZ(
-                xToSteps(stroke[0]),
-                yToSteps(stroke[1], lineIndex),
-              )}`,
-          ),
-          `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
-            letter[letter.length - 1][1],
-            lineIndex,
-          )} 80000`,
-        ];
-        if (i % 2) letterCommands.reverse();
-        return letterCommands;
-      }),
+      line
+        .flatMap((letter, i) => {
+          const letterCommands = [
+            `${xToSteps(letter[0][0])} ${yToSteps(
+              letter[0][1],
+              lineIndex,
+            )} 10000`,
+            ...letter.map(
+              (stroke) =>
+                `${xToSteps(stroke[0])} ${yToSteps(
+                  stroke[1],
+                  lineIndex,
+                )} ${getZ(
+                  xToSteps(stroke[0]),
+                  yToSteps(stroke[1], lineIndex),
+                )}`,
+            ),
+            `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
+              letter[letter.length - 1][1],
+              lineIndex,
+            )} 10000`,
+          ];
+          if (i % 2) letterCommands.reverse();
+          return letterCommands;
+        })
+        .concat(...(line.length ? ['home'] : [])),
     );
-  commands.push(commands[commands.length - 1].replace('80000', '70000'));
+  commands.push(commands[commands.length - 1].replace('10000', '0'));
   send(commands[0]);
   commands.shift();
   while (commands.length) {
@@ -119,7 +126,7 @@ const write = async () => {
 document.querySelector('#write').onclick = write;
 
 const alignPencil = async () => {
-  send('13000 8000 82000');
+  send('13000 8000 13000');
 };
 
 document.querySelector('#alignPencil').onclick = alignPencil;
@@ -157,7 +164,7 @@ const sendCustomCommand = () => {
   const command = document.querySelector('#custom').value;
   if (!command) return;
   document.querySelector('#custom').value = '';
-  send(command);
+  send(command + ' ' + getZ(command.split(' ')[0], command.split(' ')[1]));
 };
 
 document.querySelector('#custom').onkeypress = (e) => {
