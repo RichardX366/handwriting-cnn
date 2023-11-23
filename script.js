@@ -4,6 +4,8 @@ const reader = textDecoder.readable.getReader();
 let writer;
 let coords = []; // [x,y][letter][line]
 
+const ding = new Audio('ding.mp3');
+
 const mmToSteps = (mm) => Math.round((mm * 4096) / 9);
 const reLU = (x) => (x > 0 ? x : 0);
 const send = async (str) => writer.write(encoder.encode(str + '\n'));
@@ -124,6 +126,7 @@ const write = async () => {
       commands.shift();
     }
   }
+  ding.play();
   console.log('Done');
 };
 
