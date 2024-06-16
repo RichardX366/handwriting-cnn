@@ -3,13 +3,26 @@ const textDecoder = new TextDecoderStream();
 const reader = textDecoder.readable.getReader();
 let writer;
 let coords = []; // [x,y][letter][line]
+const streamData = [];
 
 const ding = new Audio('ding.mp3');
 
-const mmToSteps = (mm) => Math.round((mm * 4096) / 9);
 const reLU = (x) => (x > 0 ? x : 0);
 const send = async (str) => writer.write(encoder.encode(str + '\n'));
-const read = () => reader.read().then(({ value }) => value);
+const read = async () => {
+  if (streamData.length) return streamData.shift();
+  let output = '';
+  let { value } = await reader.read();
+  output += value;
+  while (!value.includes('\n')) {
+    ({ value } = await reader.read());
+    output += value;
+  }
+  if (output.split('\n').length > 2) {
+    streamData.push(...output.split('\n').slice(1).filter(Boolean));
+  }
+  return output.split('\n')[0];
+};
 const getLines = () => {
   const initial = document
     .querySelector('textarea')
@@ -37,16 +50,13 @@ const svgs = new Array(27)
   .fill(0)
   .map((_, i) => document.querySelector(`#line${i + 1}`));
 const getSide = () => document.querySelector('#side').value;
-const xToSteps = (mm) => 12000 + mmToSteps(mm);
-const yToSteps = (mm, line, x) =>
-  57_000 - mmToSteps(mm + line * 8.7) + Math.round((x * 500) / 80_000);
-const getZ = (x, y) =>
-  Math.round(
-    12_700 +
-      (2_100 / 60_000) * reLU((-60_000 / 86_000) * x - y + 60_000) +
-      (500 * y) / 60_000,
-  );
-
+const getX = (mm, y) =>
+  23 +
+  mm +
+  ((Math.sin((y / 4.5) * 2 * Math.PI) / 4) * (130 - y - 2 * reLU(30 - y))) /
+    130;
+const getY = (mm, line) => 123 - mm - line * 8.7;
+const getZ = (x, y) => 27.3 - ((x / 68) * (180 - y)) / 180 - 1.3 * (y / 130);
 const pickSerial = async () => {
   try {
     const pico = await navigator.serial.requestPort();
@@ -68,19 +78,33 @@ const pickSerial = async () => {
 document.querySelector('#serial').onclick = pickSerial;
 
 const loadText = async () => {
+  document.querySelector('#loadText').disabled = true;
+  document
+    .querySelectorAll('#paper button')
+    .forEach((button) => (button.disabled = true));
   coords = [];
   svgs.forEach((svg) => (svg.innerHTML = ''));
   const lines = getLines();
   for (const i in lines) {
     const line = lines[i];
     coords.push(
-      window.run(line, document.querySelector('#style').value, svgs[i]),
+      await window.run(line, document.querySelector('#style').value, svgs[i]),
     );
-    await wait(1);
   }
+  document.querySelector('#loadText').disabled = false;
+  document
+    .querySelectorAll('#paper button')
+    .forEach((button) => (button.disabled = false));
 };
 
 document.querySelector('#loadText').onclick = loadText;
+
+const alignPencil = async () => {
+  await send('G0 X40 Y40 Z24');
+  await read();
+};
+
+document.querySelector('#alignPencil').onclick = alignPencil;
 
 const write = async () => {
   const commands = coords
@@ -88,55 +112,45 @@ const write = async () => {
     .flatMap((line, lineIndex) =>
       line
         .flatMap((letter, i) => {
+          const firstY = getY(letter[0][1], lineIndex);
+          const firstX = getX(letter[0][0], firstY);
+          const lastY = getY(letter[letter.length - 1][1], lineIndex);
+          const lastX = getX(letter[letter.length - 1][0], lastY);
+
           const letterCommands = [
-            `${xToSteps(letter[0][0])} ${yToSteps(
-              letter[0][1],
-              lineIndex,
-              xToSteps(letter[0][0]),
-            )} 10000`,
-            ...letter.map(
-              (stroke) =>
-                `${xToSteps(stroke[0])} ${yToSteps(
-                  stroke[1],
-                  lineIndex,
-                  xToSteps(stroke[0]),
-                )} ${getZ(
-                  xToSteps(stroke[0]),
-                  yToSteps(stroke[1], lineIndex, xToSteps(stroke[0])),
-                )}`,
-            ),
-            `${xToSteps(letter[letter.length - 1][0])} ${yToSteps(
-              letter[letter.length - 1][1],
-              lineIndex,
-              xToSteps(letter[letter.length - 1][0]),
-            )} 10000`,
+            `G0 X${firstX} Y${firstY} Z23`,
+            ...letter.map((stroke) => {
+              const y = getY(stroke[1], lineIndex);
+              const x = getX(stroke[0], y);
+              const z = getZ(x, y);
+
+              return `G1 X${x} Y${y} Z${z}`;
+            }),
+            `G0 X${lastX} Y${lastY} Z23`,
           ];
           if (i % 2) letterCommands.reverse();
           return letterCommands;
         })
         .concat(...(line.length ? ['home'] : [])),
     );
-  commands.push(commands[commands.length - 1].replace('10000', '0'));
-  send(commands[0]);
-  commands.shift();
+  await send('G1 F999');
+  await read();
   while (commands.length) {
-    const queueSize = +(await read());
-    for (let i = 0; i < queueSize && commands.length; i++) {
-      send(commands[0]);
-      commands.shift();
+    if (commands[0].split('Z')[1] === '23') await waitForIdle();
+    if (commands[0] === 'home') {
+      await waitForIdle();
+      await home();
+    } else {
+      await send(commands[0]);
+      await read();
     }
+    commands.shift();
   }
   ding.play();
   console.log('Done');
 };
 
 document.querySelector('#write').onclick = write;
-
-const alignPencil = async () => {
-  send('13000 8000 13000');
-};
-
-document.querySelector('#alignPencil').onclick = alignPencil;
 
 document.querySelectorAll('#paper button').forEach(
   (button) =>
@@ -151,7 +165,41 @@ document.querySelectorAll('#paper button').forEach(
     }),
 );
 
-document.querySelector('#home').onclick = () => send('home');
+const getMode = async () => {
+  await send('?');
+  const response = await read();
+  await read();
+  return response.split('<')[1].split('|')[0];
+};
+
+const waitForIdle = async () => {
+  let mode = await getMode();
+  while (mode !== 'Idle') {
+    await wait(200);
+    mode = await getMode();
+  }
+};
+
+const home = async () => {
+  document.querySelector('#home').disabled = true;
+  document.querySelector('#alignPencil').disabled = true;
+  document.querySelector('#write').disabled = true;
+  await send('$J=X-10 Y-10 Z-10 F999');
+  await read();
+  await waitForIdle();
+  await send('$J=X0 Y0 Z0 F999');
+  await read();
+  await waitForIdle();
+  await send('$H');
+  await read();
+  await read();
+  await read();
+  document.querySelector('#home').disabled = false;
+  document.querySelector('#alignPencil').disabled = false;
+  document.querySelector('#write').disabled = false;
+};
+
+document.querySelector('#home').onclick = home;
 
 document.querySelector('#side').onchange = (e) => {
   if (e.target.value === 'top') {

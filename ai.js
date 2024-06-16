@@ -345,7 +345,7 @@ var r,
       p = [Y([0, 0, 1])],
       w = [Y([f, s, 1])],
       g = (r, e) => {
-        var t = 100; // SPEED
+        var t = 10; // SPEED
         for (let i = 0; i < t; i++) {
           var a = e[K(e) - 1],
             [l, o, r] = L(a, r);
@@ -373,7 +373,12 @@ var r,
         }
         tr = w;
         S(w);
-        return g(r, e);
+        return new Promise(
+          (res) =>
+            (rr = window.requestAnimationFrame(() => {
+              res(g(r, e));
+            })),
+        );
       };
     return g(h, p);
   },
@@ -662,7 +667,15 @@ var ur,
       })(r);
     });
 
-window.run = (text, style, svg) => {
+window.run = async (text, style, svg) => {
   lr = svg;
-  return E(text, style);
+  const coords = await E(text, style);
+  coords.forEach((coord) => {
+    for (let i = 3; i < coord.length; i += 3) {
+      const temp = coord[i];
+      coord[i] = coord[i - 1];
+      coord[i - 1] = temp;
+    }
+  });
+  return coords;
 };
