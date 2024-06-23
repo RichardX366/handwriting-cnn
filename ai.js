@@ -1,5 +1,5 @@
 const X_SCALE = 0.65;
-const SCALE = 2;
+const SCALE = 2.3;
 const LEGIBILITY = 2.5;
 
 let result = [];
@@ -311,7 +311,7 @@ var r,
     (Z = text), (c = Z.trim().replace(/\s+/g, ' '));
     var n = K(c);
     var f = 10 + (text.length - text.trimStart().length) * 25,
-      s = 30; // Y-LOCATION
+      s = 27; // Y-LOCATION
     (t = SCALE),
       (c = ((r) => {
         var e = r.split('').map((r) => (r in H ? H[r] : 1));

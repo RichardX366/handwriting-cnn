@@ -70,6 +70,27 @@
         placeholder="Custom Command"
       />
       <button id="customBtn" class="btn btn-success">Send</button>
+      <button class="btn btn-primary" onclick="serialOutputModal.showModal()">
+        View Serial Output
+      </button>
+      <dialog id="serialOutputModal" class="modal">
+        <div class="modal-box max-w-none">
+          <h3 class="font-bold text-lg">Output:</h3>
+          <p
+            class="py-4 my-4 min-h-4 bg-gray-900 rounded-md max-h-[calc(100vh-15em)] overflow-x-auto overflow-y-auto px-4"
+            id="serialOutput"
+          ></p>
+          <button
+            class="btn btn-error"
+            onclick="serialOutput = []; document.querySelector('#serialOutput').innerText = '';"
+          >
+            Clear Output
+          </button>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
     </div>
     <label for="file" class="mr-2">Upload Handwriting:</label>
     <input
